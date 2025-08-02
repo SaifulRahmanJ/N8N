@@ -1,0 +1,152 @@
+{
+  "name": "My Sub-workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "={{$json.website_url}}/contact",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        912,
+        320
+      ],
+      "id": "fd505fa7-5e61-4447-8bee-243e93668af4",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1408,
+        320
+      ],
+      "id": "74e84f6f-f215-4400-8aeb-67a57a7b55a9",
+      "name": "Get many messages in Gmail",
+      "webhookId": "f55ce762-bcc4-4b84-93f3-32ac81c1c220",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "tWnm3mNpGHfxTVe5",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1136,
+        320
+      ],
+      "id": "9e1d48a1-63f6-4dc7-8337-80e6322d7142",
+      "name": "Send a message in Gmail",
+      "webhookId": "720a58d7-6a3a-4831-b5f5-7b040cb34c02",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "tWnm3mNpGHfxTVe5",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        704,
+        320
+      ],
+      "id": "99a8ccc0-2e3c-4a9f-9bfe-96685e741647",
+      "name": "Calculator",
+      "retryOnFail": true,
+      "notesInFlow": true,
+      "notes": "Make simple calculations"
+    },
+    {
+      "parameters": {
+        "path": "1470d105-58ad-4aad-a416-a0084eefe306"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        912,
+        64
+      ],
+      "id": "514ab70a-0440-4735-bc3f-61990c7bd939",
+      "name": "MCP Server Trigger",
+      "webhookId": "1470d105-58ad-4aad-a416-a0084eefe306",
+      "notesInFlow": true
+    }
+  ],
+  "connections": {
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": null
+}

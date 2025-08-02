@@ -1,0 +1,263 @@
+{
+  "name": "Venture AI",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=You are a helpful assistant, \n\nYou are an expert email scraper. Your task is to extract email addresses from websites, focusing on contact pages.\n\nINSTRUCTIONS:\n- Target pages: /contact, /contact-us, /about, /team\n- Look for mailto: links and contact forms\n- Prioritize business emails (info@, contact@, sales@)\n- Avoid generic emails (noreply@, webmaster@)\n- Extract context where email was found\n\nOUTPUT FORMAT:\nReturn JSON with: website, emails_found array containing email, context, confidence, source_url\n\nQUALITY CHECKS:\n- Validate email format\n- Check if email is not placeholder text\n- Rate confidence level (high/medium/low)\n\nUse {{ $today}} function to find out today's date and time."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        640,
+        0
+      ],
+      "id": "c6583a34-6027-4abe-8ba5-a9cb30eff153",
+      "name": "AI Agent",
+      "retryOnFail": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        720,
+        224
+      ],
+      "id": "af3bc498-9ca9-49da-9ffc-0a8cb5447bd2",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://saifai.app.n8n.cloud/mcp/1470d105-58ad-4aad-a416-a0084eefe306",
+        "include": "selected",
+        "includeTools": [
+          "calculator",
+          "HTTP_Request"
+        ]
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        896,
+        240
+      ],
+      "id": "89133651-2846-4677-8d94-6ca61e2eca9f",
+      "name": "MCP Client",
+      "notesInFlow": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "options": {
+          "maxTokens": 50
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        544,
+        240
+      ],
+      "id": "00b64237-eb06-4ea1-b230-efae5549e393",
+      "name": "Azure OpenAI Chat Model",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "J6QQDV5SnlrG18jr",
+          "name": "Azure Open AI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -192,
+        0
+      ],
+      "id": "9a14f514-118d-4fa5-a4ad-d39a14e87578",
+      "name": "When chat message received",
+      "webhookId": "d665966d-d0ad-49eb-8e9a-a48ad8dbe903"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "8HyFeJg73l1iLihJ",
+          "mode": "list"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        704,
+        224
+      ],
+      "name": "Call My Sub-workflow",
+      "id": "93058631-690c-47b0-b4a4-b6b6031103d8"
+    },
+    {
+      "parameters": {
+        "url": "https://r.jina.ai/https://vian-analytics.vercel.app",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        32,
+        0
+      ],
+      "id": "98e8ef63-0351-45ea-8d19-110895b69c7d",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "e7ibUtYF1XMBLa5p",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "=Extract email id information from provided json data",
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"html\": \"<html>...parsed contact us page...</html>\",\n  \"fields\": {\n    \"email\": \"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        0
+      ],
+      "id": "bd0b774a-3833-4db9-968e-9250bbf56268",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        176,
+        208
+      ],
+      "id": "2ce85b9e-1473-4c07-9c63-25b2bafeb2c2",
+      "name": "Azure OpenAI Chat Model1",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "J6QQDV5SnlrG18jr",
+          "name": "Azure Open AI account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
